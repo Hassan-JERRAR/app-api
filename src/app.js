@@ -9,11 +9,14 @@ const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const typeDefs =require('./graphql/schemas');
 const resolvers =require('./graphql/resolvers');
+const db = require('./models');
 
 const initApplication = async() => {
     app.use(cors())
     app.options(process.env.FRONTEND_URL, cors());
     app.use(express.json());
+
+    
 
     const sequelize = new Sequelize(config.database, config.username, config.password, {
         port: config.port,
@@ -44,13 +47,13 @@ const initApplication = async() => {
             // Query : GET / READ
         // Mutation : POST / CREATE / PUT / UPDATE / DELETE
         typeDefs,
-        resolvers
+        resolvers,
     })
 
     await serverGraphQL.start();
 
     app.use(expressMiddleware(serverGraphQL, {
-        path: '/graphql'
+        path: '/graphql',
     }));
 
     app.listen(process.env.PORT, () => {
